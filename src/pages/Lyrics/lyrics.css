@@ -1,0 +1,20 @@
+.display-linebreak {
+    white-space: pre-line;
+    font-family: 'Lusitana-Bold';
+    font-size: large;
+  }
+  
+  @font-face {
+    font-family: 'Lusitana-Bold';
+    src: local('Lusitana-Bold'), url(../../fonts/Lusitana-Bold.ttf) format('woff');
+  }
+  @font-face {
+    font-family: 'Lusitana-Regular';
+    src: local('Lusitana-Regular'), url(../../fonts/Lusitana-Regular.ttf) format('woff');
+  }
+  
+  
+  /* *{
+    font-family: 'Lusitana-Bold';
+    font-size: large;
+  } */
