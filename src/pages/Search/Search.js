@@ -91,7 +91,7 @@ class Search extends React.Component {
 
   onclick = () => {
     const { trackName, artist } = this.state;
-    var apikey = "ccbf85693e14c72e7f0d8ff1e98c67b8";
+    var apikey = " ";
 
     axios
       // .get(
