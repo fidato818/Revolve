@@ -48,7 +48,7 @@ class Lyrics extends React.Component {
   }
 
   getDataFromApi() {
-    var apikey = "ccbf85693e14c72e7f0d8ff1e98c67b8";
+    var apikey = " ";
     axios
       .get(
         `https://cors-anywhere.herokuapp.com/https://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id=${
