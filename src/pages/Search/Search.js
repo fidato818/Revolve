@@ -14,10 +14,10 @@ import {
 import { withStyles } from "@material-ui/core/styles";
 import BookmarkIcon from "@material-ui/icons/Bookmark";
 import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
-
+import { Alert, AlertTitle } from '@material-ui/lab';
 import AlbumIcon from "@material-ui/icons/Album";
 import { Link } from "react-router-dom";
-
+import Fade from 'react-reveal/Fade';
 const styles = theme => ({
 
   list: {
@@ -79,7 +79,7 @@ const styles = theme => ({
 class Search extends React.Component {
   constructor() {
     super();
-    this.state = { trackName: "", artist: "", tracks: [] };
+    this.state = { trackName: "", artist: "", tracks: [], offline: false, isDisconnected: false };
     this.handleChange = this.handleChange.bind(this);
   }
 
@@ -87,11 +87,49 @@ class Search extends React.Component {
     e.preventDefault();
     this.setState({ [e.target.name]: e.target.value });
   }
+  componentDidMount() {
+    this.handleConnectionChange();
+    window.addEventListener("online", this.handleConnectionChange);
+    window.addEventListener("offline", this.handleConnectionChange);
+  }
+  componentWillUnmount() {
+    window.removeEventListener("online", this.handleConnectionChange);
+    window.removeEventListener("offline", this.handleConnectionChange);
+  }
 
 
+  //Why choose google.com?
+
+  // The reason behind sending the get request to google.com
+  // instead of any random platform is because it has great uptime.
+  // The idea here is to always send the request to a service that
+  // is always online. If you have a server, you could create a dedicated route
+  // that can replace the google.com domain but you have to be sure that
+  // it has an amazing uptime.
+
+  handleConnectionChange = () => {
+    const condition = navigator.onLine ? "online" : "offline";
+    if (condition === "online") {
+      const webPing = setInterval(() => {
+        fetch("https://www.google.com/", {
+          // Check for internet connectivity
+          mode: "no-cors"
+        })
+          .then(() => {
+            this.setState({ isDisconnected: false }, () => {
+              return clearInterval(webPing);
+            });
+          })
+          .catch((error) => console.log(error));
+      }, 2000);
+      return;
+    }
+
+    return this.setState({ isDisconnected: true });
+  };
   onclick = () => {
     const { trackName, artist } = this.state;
-    var apikey = " ";
+    var apikey = "ccbf85693e14c72e7f0d8ff1e98c67b8";
 
     axios
       // .get(
@@ -103,24 +141,33 @@ class Search extends React.Component {
         `https://cors-anywhere.herokuapp.com/http://api.musixmatch.com/ws/1.1/track.search?q_artist=${artist}&q_track=${trackName}&apikey=${apikey}`
       )
       .then(response => {
-       
         this.setState({
           tracks: response.data.message.body.track_list
         });
-      }) // one extra step
+        localStorage.setItem(
+          "Data",
+          JSON.stringify(response.data.message.body.track_list)
+        )
+      })
 
       .catch(error => {
-        alert('Error: ', error)
-        console.error(error)
+        // alert('Error: ', error)
+        // console.error(error)
+        let collection = localStorage.getItem("Data");
+        console.log("collection, ", collection)
+        this.setState({
+          tracks: collection,
+          offline: true
+        });
       })
   };
   render() {
-    const { trackName, artist, tracks, } = this.state;
-    // const { classes } = this.props;
-    
+    const { trackName, artist, tracks, isDisconnected } = this.state;
+    // const { classNamees } = this.props;
+
     return (
 
-      <div class="background">
+      <div className="background">
         <Appbar />
         <Container maxWidth="lg">
           <div style={{ paddingTop: 70, }} >
@@ -143,7 +190,7 @@ class Search extends React.Component {
               </div>
 
               <Typography
-                style={{ textAlign: "center",fontFamily: 'Lusitana-Regular' }}
+                style={{ textAlign: "center", fontFamily: 'Lusitana-Regular' }}
                 variant="h6"
                 component="h2"
               >
@@ -190,6 +237,12 @@ class Search extends React.Component {
               </Grid>
             </Paper>
             <div style={{ paddingTop: 20 }}>
+              <Fade when={isDisconnected}>
+                {isDisconnected && <Alert severity="warning">
+                  <AlertTitle>Warning</AlertTitle>
+        Internet Disconnect — <strong>You are in offline mode!</strong>
+                </Alert>}
+              </Fade>
               <Grid
                 container
                 spacing={2}
@@ -198,10 +251,10 @@ class Search extends React.Component {
                 alignItems="flex-start"
               >
                 {/* body, */}
-                {tracks.map((elem, i) => (
+                {tracks && tracks.map((elem, i) => (
                   <Grid item xs={12} sm={6} md={3} key={i}>
-                    <Link style={{ textDecoration: 'none' }} to={`/lyrics/${elem.track.track_id}`} target="_blank">
-                      <figure class="snip1543 hover" style={{ cursor: 'pointer' }}
+                    <Link style={{ textDecoration: 'none' }} to={!isDisconnected ? `/lyrics/${elem.track.track_id}` : '#'} target="_blank">
+                      <figure className="snip1543 hover" style={{ cursor: 'pointer' }}
                       >
                         <img
                           src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/331810/sample101.jpg"
@@ -239,7 +292,7 @@ class Search extends React.Component {
               </Grid>
             </div>
 
-            {/* <figure class="snip1543 hover"  style={{ cursor: 'pointer' }}>
+            {/* <figure className="snip1543 hover"  style={{ cursor: 'pointer' }}>
               <img
                 src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/331810/sample100.jpg"
                 alt="sample100"

@@ -1,29 +1,15 @@
 import React from "react";
-// import "./styles.css";
-// import "./uikit.css";
 import "./lyrics.css";
-// import "./uikit.min.css";
-// import "./uikit-icons.min.js";
-// import "./uikit.min.js";
 import axios from "axios";
-
 import Appbar from '../../config/navbar'
 import {
   Typography,
   Paper,
   Container,
 } from "@material-ui/core";
-// import MenuIcon from "@material-ui/icons/Menu";
 import { withStyles } from "@material-ui/core/styles";
-// import BookmarkIcon from "@material-ui/icons/Bookmark";
-// import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
-
-// import AlbumIcon from "@material-ui/icons/Album";
-
-// import { Link } from "react-router-dom";
 var moment = require('moment');
-const styles = theme => ({ 
- 
+const styles = theme => ({
   title: {
     flexGrow: 1,
     textDecoration: "None",
@@ -31,24 +17,23 @@ const styles = theme => ({
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1
-  }, 
-  
+  },
 });
-class Lyrics extends React.Component {  
+class Lyrics extends React.Component {
   constructor() {
     super();
     this.state = { trackName: "", artist: "", tracks: [] };
-   
+
   }
 
   componentDidMount() {
     this.getDataFromApi();
     this.getTrackDataFromApi();
-  
+console.log(this.props.match.params.id)
   }
 
   getDataFromApi() {
-    var apikey = " ";
+    var apikey = "ccbf85693e14c72e7f0d8ff1e98c67b8";
     axios
       .get(
         `https://cors-anywhere.herokuapp.com/https://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id=${
@@ -59,16 +44,12 @@ class Lyrics extends React.Component {
         // console.log("response", response);
 
         this.setState({
-          lyrics_id: response.data.message.body.lyrics.lyrics_id,
-          lyrics_body:
-            response.data.message.body.lyrics.lyrics_body
-          ,
-          lyrics_copyright: response.data.message.body.lyrics.lyrics_copyright,
+          // lyrics_id: response.data.message.body.lyrics.lyrics_id,
+          lyrics_body: response.data.message.body.lyrics.lyrics_body,
+          // lyrics_copyright: response.data.message.body.lyrics.lyrics_copyright,
           updated_time: response.data.message.body.lyrics.updated_time
         });
-      }) // one extra step
-      // lyrics_id, lyrics_body, lyrics_copyright, updated_time
-      //
+      })
       .catch(error => {
         // alert('Error: ', error)
         console.error(error)
@@ -87,7 +68,7 @@ class Lyrics extends React.Component {
       .then(response => {
         // console.log("response", response.data.message.body.track);
         this.setState({
-          track_id: response.data.message.body.track.track_id,
+          // track_id: response.data.message.body.track.track_id,
           track_name: response.data.message.body.track.track_name,
           album_name: response.data.message.body.track.album_name,
           artist_name: response.data.message.body.track.artist_name
@@ -101,7 +82,7 @@ class Lyrics extends React.Component {
     // }
   }
 
-  
+
   render() {
     const {
       track_name,
@@ -122,7 +103,7 @@ class Lyrics extends React.Component {
               <Typography style={{ fontFamily: 'Lusitana-Regular', margin: 15, fontSize: 'large' }}><b>Album Name:</b> {album_name}</Typography>
               <Typography style={{ fontFamily: 'Lusitana-Regular', margin: 15, fontSize: 'large' }}><b>Artist Name:</b> {artist_name}</Typography>
 
-              <div class="display-linebreak" style={{ margin: 15 }}>
+              <div className="display-linebreak" style={{ margin: 15 }}>
                 Lyrics: {lyrics_body ? lyrics_body : 'Lyrics Not Found'}
               </div>
               <Typography style={{ fontFamily: 'Lusitana-Regular', margin: 15, fontSize: 'large' }}><b>Lyrics Update Time:</b>{moment(updated_time).format("dddd, MMMM Do YYYY, h:mm:ss a")}</Typography>
