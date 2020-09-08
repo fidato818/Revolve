@@ -26,7 +26,7 @@ this.addEventListener("install", (event) => {
     )
 })
 this.addEventListener("fetch", (event) => {
-    // console.warn("event.request.url", event.request.url)
+    console.warn("event.request.url", event.request.url)
     if (!navigator.onLine) {
         if (event.request.url === "http://localhost:3000/static/js/main.chunk.js") {
             // if (event.request.url) {
