@@ -20,8 +20,8 @@ export default function swDev() {
     return outputArray;
   }
 
-  let swUrl = './sw.js';
-  // let swUrl = `${process.env.PUBLIC_URL}/sw.js`;
+  // let swUrl = './sw.js';
+  let swUrl = `${process.env.PUBLIC_URL}/sw.js`;
   navigator.serviceWorker.register(swUrl).then((response) => {
     // console.log("response", response);
     if (!response.pushManager) {
